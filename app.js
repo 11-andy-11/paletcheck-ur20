@@ -208,9 +208,9 @@ function computeScore(d, ev, role) {
     const rp = ['dir-productie', 'dir-fabrica', 'investitii'].includes(role) ? 10 : 5;
     pts += rp; reasons.push(`Rol: ${ROLE_LABEL[role]} (+${rp})`);
   } else reasons.push('Rolul nu e ales încă (0)');
-  const level = pts >= 70 ? { label: 'CALD', color: 'var(--bad)', text: 'Prioritate mare: contact tehnic în 48 h.' }
-    : pts >= 45 ? { label: 'CĂLDUȚ', color: 'var(--warn)', text: 'Merită o demonstrație și o discuție tehnică.' }
-      : { label: 'RECE', color: 'var(--primary-2)', text: 'Interes informativ: urmărire prin conținut și newsletter.' };
+  const level = pts >= 70 ? { label: 'RIDICAT', color: 'var(--ok)', text: 'Prioritate mare: contact tehnic în 48 h.' }
+    : pts >= 45 ? { label: 'MEDIU', color: '#D4A000', text: 'Merită o demonstrație și o discuție tehnică.' }
+      : { label: 'SCĂZUT', color: 'var(--bad)', text: 'Interes informativ: urmărire prin conținut și newsletter.' };
   return { pts, reasons, ...level };
 }
 
@@ -470,7 +470,7 @@ function renderConfirmation(v) {
       <div class="banner ok"><b>✅ Cerere înregistrată: ${id}</b>Demonstrație ${esc(demo)}, ${esc(date)}, ${esc(v.slot)}. (simulare: nu se trimite nimic)</div>
       <h3>Pașii următori</h3>
       <ol class="timeline">
-        <li><b>${state.score.label === 'CALD' ? 'În 48 de ore' : 'În 5 zile lucrătoare'}:</b> apel tehnic cu un inginer Tech-Con</li>
+        <li><b>${state.score.label === 'RIDICAT' ? 'În 48 de ore' : 'În 5 zile lucrătoare'}:</b> apel tehnic cu un inginer Tech-Con</li>
         <li><b>Demonstrație:</b> ${esc(demo)}, cu studiul de caz PURATOS</li>
         <li><b>Evaluare la fața locului:</b> ambalaj, debit, spațiu, siguranță, igienă</li>
         <li><b>Ofertă și plan:</b> livrare în ~4 luni (ca la PURATOS)</li>
