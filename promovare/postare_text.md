@@ -18,10 +18,12 @@ Am construit PaletCheck UR20, un instrument gratuit care se deschide din browser
 
 1️⃣ Introduceți găleata, paletul și ritmul liniei.
 2️⃣ Primiți pe loc verdictul: se potrivește linia dumneavoastră cu o celulă robotică UR20?
-3️⃣ Vedeți celula în realitate augmentată, la scară reală, direct în hala dumneavoastră.
+3️⃣ Vedeți celula în realitate augmentată, la scară reală (~3,9 × 3,9 m), direct în hala dumneavoastră. Fără aplicație de instalat: Android în Chrome, iPhone în Safari.
 4️⃣ Descărcați dosarul pentru directorul financiar și cereți o demonstrație.
 
 Celula UR20 de la Tech-Con paletizează deja găleți în România, la PURATOS.
+
+📱 Puneți celula direct în hala dvs., în AR: https://11-andy-11.github.io/paletcheck-ur20/?utm_source=linkedin&utm_medium=postare_ar&utm_campaign=ur20_2026#ar
 
 👉 Verificați-vă linia în 2 minute: https://11-andy-11.github.io/paletcheck-ur20/?utm_source=linkedin&utm_medium=postare&utm_campaign=ur20_2026
 
