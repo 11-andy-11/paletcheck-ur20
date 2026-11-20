@@ -713,6 +713,8 @@ async function openAR() {
   });
 }
 $$('[data-open-ar]').forEach((b) => b.addEventListener('click', openAR));
+// Link direct din afiș / postare: .../#ar sau ?ar=1 deschide macheta AR
+if (location.hash === '#ar' || new URLSearchParams(location.search).has('ar')) openAR();
 $('#closeAR').addEventListener('click', () => {
   $('#arModal').hidden = true;
   document.body.style.overflow = '';

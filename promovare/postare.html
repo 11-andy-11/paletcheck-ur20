@@ -37,6 +37,36 @@ h1 em{font-style:normal;color:#F2C230}
 .qr img{width:180px;height:180px;display:block}
 .qr:after{content:"SCANAȚI";position:absolute;left:50%;transform:translateX(-50%);top:-17px;background:#F2C230;color:#0f2238;font-family:Montserrat;font-weight:900;font-size:17px;padding:5px 14px;border-radius:20px;letter-spacing:1px}
 .arrow{position:absolute;right:300px;bottom:150px;font-size:56px;color:#F2C230;font-weight:900}
+
+.arzone{display:flex;gap:30px;padding:22px 56px 0 64px;height:452px}
+.phone{flex:none;display:block;width:232px;height:430px;border-radius:38px;background:#0b0f14;padding:9px;box-shadow:0 22px 40px rgba(15,34,56,.35),inset 0 0 0 2px #2a3340;text-decoration:none;transform:rotate(-3deg)}
+.screen{position:relative;width:100%;height:100%;border-radius:30px;overflow:hidden;background:#3a3631}
+.wall{position:absolute;left:0;right:0;top:0;height:36%;background:linear-gradient(180deg,#8d8a83,#6b675f);border-bottom:3px solid #4b4740}
+.wall:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 46px,rgba(0,0,0,.12) 46px 48px)}
+.floor{position:absolute;left:-60%;width:220%;bottom:-6%;height:74%;transform-origin:50% 100%;transform:perspective(220px) rotateX(55deg);background-color:#55504a;background-image:linear-gradient(rgba(242,194,48,.28) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(242,194,48,.28) 1.5px,transparent 1.5px);background-size:34px 34px}
+.notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:70px;height:18px;border-radius:10px;background:#0b0f14}
+.status{position:absolute;top:36px;left:50%;transform:translateX(-50%);white-space:nowrap;background:rgba(15,34,56,.82);color:#fff;font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:14px;display:flex;align-items:center;gap:6px}
+.status i{width:8px;height:8px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 3px rgba(61,220,132,.3)}
+.cell{position:absolute;width:228px;left:50%;transform:translateX(-50%);top:146px;filter:drop-shadow(0 6px 6px rgba(0,0,0,.35))}
+.rc{position:absolute;width:20px;height:20px;border:3px solid #F2C230}
+.tl{left:4px;top:136px;border-right:0;border-bottom:0}.tr{right:4px;top:136px;border-left:0;border-bottom:0}
+.bl{left:4px;top:328px;border-right:0;border-top:0}.br{right:4px;top:328px;border-left:0;border-top:0}
+.dim{position:absolute;top:116px;left:50%;transform:translateX(-50%);background:#F2C230;color:#0f2238;font-weight:800;font-size:12.5px;padding:3px 10px;border-radius:10px;white-space:nowrap}
+.arbtn{position:absolute;bottom:16px;left:12px;right:12px;text-align:center;background:#F2C230;color:#0f2238;font-weight:800;font-size:14px;padding:10px 6px;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+.arcopy{flex:1;padding-top:6px}
+.kick{font-size:15px;font-weight:800;letter-spacing:1.6px;color:#2e9d5b}
+.arcopy h2{font-family:Montserrat,Arial;font-weight:900;font-size:34px;line-height:1.08;color:#0f2238;margin-top:8px;letter-spacing:-.5px}
+.arcopy h2 em{font-style:normal;color:#2F5D8A}
+.arcopy ul{list-style:none;margin-top:12px}
+.arcopy li{font-size:20px;line-height:1.3;padding-left:30px;position:relative;margin-bottom:5px;color:#1b2f47}
+.arcopy li:before{content:"✓";position:absolute;left:0;top:-1px;width:22px;height:22px;border-radius:50%;background:#2e9d5b;color:#fff;font-size:14px;font-weight:900;display:grid;place-items:center}
+.arqr{display:flex;align-items:center;gap:16px;margin-top:12px;text-decoration:none;color:#0f2238;background:#FFF6D6;border:2px dashed #F2C230;border-radius:16px;padding:8px 14px 8px 8px;width:fit-content}
+.arqr img{width:104px;height:104px;border-radius:8px;display:block}
+.arqr span{font-size:19px;line-height:1.25}
+.arqr em{font-style:normal;font-weight:800;color:#2F5D8A}
+.facts{display:flex;gap:10px;margin-top:14px}
+.facts span{background:#F2F6FB;border-radius:20px;padding:6px 12px;font-size:16px;color:#1b2f47;white-space:nowrap}
+.facts b{color:#0f2238}
 </style></head><body>
 <div class="top">
   <div class="brand"><div class="dot">✓</div>PaletCheck UR20 <small>· pentru Tech-Con</small></div>
@@ -45,12 +75,29 @@ h1 em{font-style:normal;color:#F2C230}
   <p class="sub">Aflați în <b>2 minute, de pe telefon</b>, dacă linia dumneavoastră se potrivește cu o celulă robotică UR20 și vedeți-o în AR, <b>direct în hala dumneavoastră</b>.</p>
 </div>
 
-<div class="stage">
-  <img src="robot_crop.png" alt="Celula de paletizare UR20 cu bandă de alimentare, braț robotic și palet">
-  <div class="card c1"><b>20 kg</b>sarcină utilă UR20, pentru găleți pline până la ~15 kg</div>
-  <div class="card c2"><b>2 poziții de palet</b>paletul plin se schimbă fără să oprim linia</div>
-  <div class="card c3"><b>AR la scară reală</b>~3,9 × 3,9 m, plasată în hala dvs. de pe telefon</div>
-  <div class="card c4"><b>Deja în România</b>2 celule UR20 paletizează găleți la PURATOS</div>
+<div class="arzone">
+  <a class="phone" href="https://11-andy-11.github.io/paletcheck-ur20/?utm_source=linkedin&amp;utm_medium=postare_ar&amp;utm_campaign=ur20_2026#ar" aria-label="Deschideți celula UR20 în realitate augmentată">
+    <div class="screen">
+      <div class="wall"></div><div class="floor"></div>
+      <div class="notch"></div>
+      <div class="status"><i></i>AR · scară reală 1:1</div>
+      <img class="cell" src="robot_t.png" alt="Celula UR20 plasată în AR pe podeaua halei">
+      <span class="rc tl"></span><span class="rc tr"></span><span class="rc bl"></span><span class="rc br"></span>
+      <div class="dim">↔ 3,9 m × 3,9 m</div>
+      <div class="arbtn">📱 Pune celula în hala ta</div>
+    </div>
+  </a>
+  <div class="arcopy">
+    <div class="kick">REALITATE AUGMENTATĂ · FĂRĂ APLICAȚIE DE INSTALAT</div>
+    <h2>Puneți celula în hala dumneavoastră. <em>Înainte s-o cumpărați.</em></h2>
+    <ul>
+      <li><b>Scară reală 1:1</b>: ~3,9 × 3,9 m, înălțime ~1,9 m</li>
+      <li><b>Vă plimbați în jurul ei</b>: spațiu, acces, culoare</li>
+      <li><b>Din browser</b>: Android (Chrome) și iPhone (Safari)</li>
+    </ul>
+    <a class="arqr" href="https://11-andy-11.github.io/paletcheck-ur20/?utm_source=linkedin&amp;utm_medium=postare_ar&amp;utm_campaign=ur20_2026#ar"><img src="qr_ar.png" alt="Cod QR direct în AR"><span><b>Scanați aici</b> și celula<br>apare în hala dvs.<br><em>AR direct →</em></span></a>
+    <div class="facts"><span><b>20 kg</b> sarcină UR20</span><span><b>2</b> poziții de palet</span><span>✓ Deja la <b>PURATOS</b></span></div>
+  </div>
 </div>
 
 <div class="steps">

@@ -1,6 +1,6 @@
 // Service worker: aplicația se deschide și fără internet.
 // La fiecare modificare importantă, crește versiunea ca telefoanele să ia fișierele noi.
-const CACHE = "paletcheck-v4";
+const CACHE = "paletcheck-v5";
 const FILES = [
   "./", "./index.html", "./style.css", "./app.js", "./scene.js", "./manifest.json",
   "./vendor/three.module.min.js", "./vendor/OrbitControls.js",
