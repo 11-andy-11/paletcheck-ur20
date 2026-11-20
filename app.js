@@ -533,6 +533,63 @@ $$('#stepper li').forEach((li) => li.addEventListener('click', () => {
   if (n >= 2 && state.scene) requestAnimationFrame(() => state.scene.resize());
 }));
 
+// ---------- Realitate augmentată ----------
+let mvLoaded = null;
+fetch('ar/dimensiuni.json').then((r) => r.json()).then((s) => {
+  $('#arDims').innerHTML = `Amprenta cu zona de siguranță: <b>~${fmt(s.x, 1)} × ${fmt(s.z, 1)} m</b> · înălțime ~${fmt(s.y, 1)} m`;
+}).catch(() => {});
+
+$('#openAR').addEventListener('click', async () => {
+  const modal = $('#arModal');
+  modal.hidden = false;
+  document.body.style.overflow = 'hidden';
+  if (!mvLoaded) mvLoaded = import('./vendor/model-viewer.min.js');
+  try { await mvLoaded; } catch {
+    $('#arStage').innerHTML = '<div class="ar-loading">Macheta 3D nu s-a putut încărca. Verifică internetul.</div>';
+    return;
+  }
+  if ($('#arStage model-viewer')) return;
+  const mv = document.createElement('model-viewer');
+  Object.entries({
+    src: 'ar/celula-ur20.glb',
+    'ios-src': 'ar/celula-ur20.usdz',
+    alt: 'Celulă de paletizare UR20 la scară reală',
+    ar: '',
+    'ar-modes': 'webxr scene-viewer quick-look',
+    'ar-placement': 'floor',
+    'ar-scale': 'fixed',
+    'camera-controls': '',
+    'touch-action': 'none',
+    'auto-rotate': '',
+    'auto-rotate-delay': '0',
+    'rotation-per-second': '12deg',
+    'shadow-intensity': '1',
+    'shadow-softness': '0.8',
+    exposure: '1.1',
+    'environment-image': 'neutral',
+    'camera-orbit': '35deg 62deg auto',
+    'interaction-prompt': 'none',
+  }).forEach(([k, v]) => mv.setAttribute(k, v));
+  mv.innerHTML = '<button slot="ar-button" class="ar-go" type="button">📱 Pune celula în hala ta</button>';
+  $('#arStage').innerHTML = '';
+  $('#arStage').appendChild(mv);
+  mv.addEventListener('load', () => {
+    if (!mv.canActivateAR) {
+      const n = document.createElement('div');
+      n.className = 'ar-noar';
+      n.innerHTML = 'Realitatea augmentată merge pe telefon: <b>Android → Chrome</b>, <b>iPhone → Safari</b>, pe linkul public. Aici poți roti macheta 3D cu degetul sau cu mouse-ul.';
+      $('#arStage').appendChild(n);
+    }
+  });
+  mv.addEventListener('ar-status', (e) => {
+    if (e.detail.status === 'failed') alert('AR nu a pornit pe acest telefon. Încearcă din Chrome (Android) sau Safari (iPhone), în lumină bună, îndreptând camera spre podea.');
+  });
+});
+$('#closeAR').addEventListener('click', () => {
+  $('#arModal').hidden = true;
+  document.body.style.overflow = '';
+});
+
 // ---------- PWA ----------
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 let installPrompt = null;

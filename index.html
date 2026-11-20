@@ -170,6 +170,18 @@
         <div class="banner" id="verdictBanner"></div>
         <h2 class="section-title">Ce se schimbă</h2>
         <div class="stats" id="statsAfter"></div>
+        <div class="card ar-card">
+          <div class="ar-head">
+            <span class="ar-icon">🥽</span>
+            <div>
+              <h3>Vezi celula la mărime reală în hala ta</h3>
+              <p>Pune celula UR20 pe podeaua fabricii prin camera telefonului și verifică dacă încape lângă linia ta.</p>
+            </div>
+          </div>
+          <div class="ar-dims" id="arDims">Amprenta cu zona de siguranță: <b>~3,9 × 3,9 m</b> · înălțime ~1,9 m</div>
+          <button class="btn robot big" id="openAR" type="button">📱 Deschide în realitate augmentată</button>
+          <p class="note"><span class="tag hyp">Machetă</span> orientativă la scară reală (UR20: rază 1.750 mm, bază Ø245 mm, sarcină 20 kg). Amplasarea reală se stabilește la evaluarea Tech-Con.</p>
+        </div>
       </div>
       <h2 class="section-title">Verificări</h2>
       <div class="checks" id="checks"></div>
@@ -284,6 +296,22 @@
     Valorile PURATOS (7,4–8,6 găleți/min) sunt rezultate de test ale unei aplicații, nu o garanție pentru alte fabrici.
     Fără calcule de economii salariale sau amortizare.
   </footer>
+
+  <!-- Realitate augmentată -->
+  <div class="ar-modal" id="arModal" hidden>
+    <div class="ar-bar">
+      <b>Celula UR20 · mărime reală</b>
+      <button type="button" class="ar-close" id="closeAR" aria-label="Închide">✕</button>
+    </div>
+    <div class="ar-stage" id="arStage"><div class="ar-loading">Se încarcă macheta 3D…</div></div>
+    <div class="ar-help" id="arHelp">
+      <ol>
+        <li>Apasă <b>„Pune celula în hala ta"</b>.</li>
+        <li>Îndreaptă camera spre podea și mișcă telefonul încet, până apare suprafața.</li>
+        <li>Celula apare la scară 1:1. Plimbă-te în jurul ei și verifică spațiul, accesul și culoarele.</li>
+      </ol>
+    </div>
+  </div>
 
   <script type="module" src="app.js"></script>
 </body>

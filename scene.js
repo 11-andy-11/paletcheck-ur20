@@ -14,8 +14,8 @@ const PICK = new THREE.Vector3(-0.85, BELT_Y, 0);
 const PALLET = { w: 1.2, d: 0.8, h: 0.144 };
 const PALLET_POS = [new THREE.Vector3(0, 0, -1.05), new THREE.Vector3(0, 0, 1.05)];
 const PEDESTAL_H = 0.5;
-const SHOULDER_H = PEDESTAL_H + 0.24;
-const L1 = 0.95, L2 = 0.8, LW = 0.42; // braț, antebraț, încheietură+gripper
+const SHOULDER_H = PEDESTAL_H + 0.236; // UR20: d1 ≈ 236 mm
+const L1 = 0.862, L2 = 0.729, LW = 0.42; // UR20: braț 862 mm, antebraț 729 mm; încheietură+gripper (estimat)
 const PICK_T = 0.15; // momentul preluării în ciclu
 
 const MAT = {
@@ -138,6 +138,7 @@ export class CellScene {
     this.placedGroup = new THREE.Group();
     scene.add(this.placedGroup);
     this.queueGroup = new THREE.Group();
+    this.queueGroup.userData.isQueue = true;
     scene.add(this.queueGroup);
 
     this.setParams(this.params);
@@ -164,6 +165,7 @@ export class CellScene {
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), MAT.floor);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
+    floor.userData.noExport = true;
     this.scene.add(floor);
 
     // Marcaje galbene pe podea în jurul paleților
@@ -178,7 +180,9 @@ export class CellScene {
       });
     });
     // linie de circulație
-    this.scene.add(box(0.08, 0.004, 9, MAT.yellow, 1.35, 0.002, 0));
+    const walk = box(0.08, 0.004, 9, MAT.yellow, 1.35, 0.002, 0);
+    walk.userData.noExport = true;
+    this.scene.add(walk);
 
     // Rafturi de depozit în fundal
     const rack = (x0, z0, rotY) => {
@@ -198,6 +202,7 @@ export class CellScene {
       }
       g.position.set(x0, 0, z0);
       g.rotation.y = rotY;
+      g.userData.noExport = true;
       enableShadows(g);
       this.scene.add(g);
     };
@@ -206,9 +211,9 @@ export class CellScene {
     rack(-5.2, 2.6, Math.PI / 2);
   }
 
-  buildConveyor() {
+  buildConveyor(x0 = -4.4, addToScene = true) {
     const g = new THREE.Group();
-    const x0 = -4.4, x1 = -0.62, len = x1 - x0, cx = (x0 + x1) / 2, w = 0.5;
+    const x1 = -0.62, len = x1 - x0, cx = (x0 + x1) / 2, w = 0.5;
     g.add(box(len, 0.03, w, MAT.belt, cx, BELT_Y - 0.015, 0));
     g.add(box(len, 0.12, 0.04, MAT.frame, cx, BELT_Y - 0.03, w / 2 + 0.02));
     g.add(box(len, 0.12, 0.04, MAT.frame, cx, BELT_Y - 0.03, -w / 2 - 0.02));
@@ -216,18 +221,23 @@ export class CellScene {
       [-1, 1].forEach((s) => g.add(box(0.05, BELT_Y - 0.09, 0.05, MAT.frame, x, (BELT_Y - 0.09) / 2, s * (w / 2 + 0.02))));
     }
     // role vizibile pe lateral (se rotesc când banda merge)
-    this.rollers = [];
+    const rollers = [];
     for (let x = x0 + 0.1; x < x1; x += 0.22) {
       const r = cyl(0.03, 0.03, w + 0.12, MAT.roller, 12);
       r.rotation.x = Math.PI / 2;
       r.position.set(x, BELT_Y - 0.06, 0);
       g.add(r);
-      this.rollers.push(r);
+      rollers.push(r);
     }
     // opritor la capăt
     g.add(box(0.04, 0.1, w, MAT.dark, x1 + 0.02, BELT_Y + 0.05, 0));
     enableShadows(g);
-    this.scene.add(g);
+    if (addToScene) {
+      this.rollers = rollers;
+      g.userData.noExport = true; // în AR exportăm doar capătul benzii
+      this.scene.add(g);
+    }
+    return g;
   }
 
   buildPallets() {
@@ -281,6 +291,7 @@ export class CellScene {
       return pivot;
     });
     group.add(torso);
+    group.userData.noExport = true;
     enableShadows(group);
     this.scene.add(group);
     group.position.set(PICK.x + 0.55, 0, 0);
@@ -349,6 +360,7 @@ export class CellScene {
     zone.rotation.x = -Math.PI / 2; zone.position.y = 0.006;
     const ring = new THREE.Mesh(new THREE.RingGeometry(1.88, 1.93, 64), MAT.zoneRing);
     ring.rotation.x = -Math.PI / 2; ring.position.y = 0.007;
+    zone.userData.noExport = true;
     g.add(zone, ring);
     this.zone = zone;
     // trei scanere de siguranță
@@ -367,6 +379,7 @@ export class CellScene {
     const coneH = 1.79 - BELT_Y;
     const cone = new THREE.Mesh(new THREE.ConeGeometry(0.26, coneH, 32, 1, true), MAT.vision);
     cone.position.set(PICK.x, BELT_Y + coneH / 2, 0);
+    cone.userData.noExport = true;
     g.add(cone);
     enableShadows(g);
     zone.castShadow = ring.castShadow = cone.castShadow = false;
@@ -682,6 +695,39 @@ export class CellScene {
     w.legs[1].rotation.x = -swing;
     // genunchi „îndoiți" simulați prin coborârea corpului la aplecare
     w.torso.position.y = 0.92 - bend * 0.12;
+  }
+
+  // ---------- Export pentru realitate augmentată ----------
+  // Celula în poziție de lucru (robotul ține o găleată deasupra paletului), fără rafturi și podea.
+  buildExportGroup() {
+    this.setMode('robot', false);
+    this.transition = null;
+    this.applyModeVisibility(1);
+    const slot = this.slotWorld(this.target, this.slotIdx[this.target]);
+    this.animateRobot(0.5, this.queue[0], slot);
+    this.scene.updateMatrixWorld(true);
+    const g = new THREE.Group();
+    this.scene.children.forEach((c) => {
+      if (c.isLight || c.userData.noExport || !c.visible) return;
+      g.add(c.clone(true));
+    });
+    const drop = [];
+    g.traverse((o) => { if (o.userData.noExport || o.visible === false) drop.push(o); });
+    drop.forEach((o) => o.parent && o.parent.remove(o));
+    // doar capătul transportorului (linia existentă a clientului) și gălețile de pe el
+    const AR_X0 = -2.0;
+    g.add(this.buildConveyor(AR_X0, false));
+    const gone = [];
+    g.traverse((o) => { if (o.parent && o.parent.children && o.position.x < AR_X0 + 0.15 && o.parent.userData.isQueue) gone.push(o); });
+    gone.forEach((o) => o.parent.remove(o));
+    // origine: centrul celulei, la nivelul podelei
+    const bb = new THREE.Box3().setFromObject(g);
+    const c = bb.getCenter(new THREE.Vector3());
+    const root = new THREE.Group();
+    g.position.set(-c.x, -bb.min.y, -c.z);
+    root.add(g);
+    const size = bb.getSize(new THREE.Vector3());
+    return { root, size };
   }
 
   bendFor(y) {
