@@ -383,6 +383,7 @@ function renderStep3() {
 }
 
 $('#toRequest').addEventListener('click', () => {
+  try { state.snapshot = state.scene ? state.scene.snapshot() : null; } catch { state.snapshot = null; }
   renderStep4();
   goStep(4);
 });
@@ -461,6 +462,7 @@ function buildSummary(v, id) {
 function renderConfirmation(v) {
   const id = 'TC-26-' + String(Math.floor(1000 + Math.random() * 9000));
   const summary = buildSummary(v, id);
+  state.request = { v, id };
   const office = OFFICES[state.data.region];
   const demo = v.demoType === 'online' ? 'online' : v.demoType === 'fabrica' ? 'în fabrica ta' : `la biroul Tech-Con din ${office}`;
   const date = new Date(v.date + 'T12:00').toLocaleDateString('ro-RO', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -478,6 +480,7 @@ function renderConfirmation(v) {
       <h3>Rezumat pentru echipa Tech-Con</h3>
       <div class="summary-box" id="summaryText">${esc(summary)}</div>
       <button class="btn secondary" id="copySummary" type="button">📋 Copiază rezumatul</button>
+      <button class="btn primary big" id="pdfBtn" type="button">📄 Descarcă dosarul pentru directorul financiar</button>
       <button class="btn secondary" id="icsBtn" type="button">📅 Adaugă în calendar</button>
       <button class="btn ghost" id="restart" type="button">↺ Verificare nouă</button>
     </div>`;
@@ -494,6 +497,7 @@ function renderConfirmation(v) {
     }
     e.target.textContent = '✓ Copiat';
   });
+  $('#pdfBtn').addEventListener('click', (e) => makeDossier(e.currentTarget));
   $('#icsBtn').addEventListener('click', () => {
     const [h1, h2] = v.slot.split('–');
     const ds = v.date.replace(/-/g, '');
@@ -514,6 +518,129 @@ function renderConfirmation(v) {
     if (state.scene) state.scene.setMode('human', false);
     goStep(1);
   });
+}
+
+// ---------- Dosar PDF pentru directorul financiar ----------
+function loadScript(src) {
+  return new Promise((res, rej) => {
+    if (document.querySelector(`script[src="${src}"]`)) return res();
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+function dossierHTML() {
+  const d = state.data, ev = state.ev, m = manualLoad(d);
+  const { v, id } = state.request;
+  const office = OFFICES[d.region];
+  const ok = ev.status !== 'bad';
+  const today = new Date().toLocaleDateString('ro-RO');
+  const demoDate = new Date(v.date + 'T12:00').toLocaleDateString('ro-RO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const demo = v.demoType === 'online' ? 'online' : v.demoType === 'fabrica' ? 'în fabrica dumneavoastră' : `la biroul Tech-Con din ${office}`;
+  const verdict = ev.status === 'ok'
+    ? { cls: 'ok', t: 'Compatibil orientativ', s: 'Linia se aseamănă cu aplicația PURATOS. Recomandăm evaluarea tehnică.' }
+    : ev.status === 'warn'
+      ? { cls: 'warn', t: 'Posibil, cu validare tehnică', s: `De verificat: ${ev.checks.filter((c) => c.status === 'warn').map((c) => c.title.toLowerCase()).join(', ')}.` }
+      : { cls: 'bad', t: 'Nepotrivit pentru celula standard', s: 'Este necesară o analiză tehnică separată, fără promisiuni înainte de test.' };
+  const dot = (st) => `<i class="dd ${st}"></i>`;
+  const row = (label, before, after, neutral = false) => `<tr><td>${label}</td><td class="${neutral ? 'n' : 'b'}">${before}</td><td class="a">${after}</td></tr>`;
+  let dims = '~3,9 × 3,9 m';
+  const dt = $('.ar-dims-text b'); if (dt) dims = dt.textContent;
+
+  return `
+  <div class="dz-head">
+    <div><div class="dz-brand">PaletCheck <span>UR20</span></div><div class="dz-sub">Dosar de pre-evaluare · paletizarea găleților</div></div>
+    <div class="dz-meta">Nr. ${esc(id)}<br>${today}</div>
+  </div>
+  <div class="dz-body">
+    <h1>Paletizarea automată a găleților la ${esc(v.company.trim())}</h1>
+    <p class="dz-lead">Pregătit pentru: <b>conducerea financiară</b> · Solicitat de: <b>${esc(ROLE_LABEL[v.role])}</b> · ${esc(FACTORY_LABEL[d.factory])}, regiunea ${esc(d.region)}</p>
+
+    <div class="dz-top">
+      <div class="dz-img">${state.snapshot ? `<img src="${state.snapshot}" alt="">` : '<div class="dz-noimg">Vizualizare 3D indisponibilă</div>'}
+        <span>${ok ? 'Simulare: celula UR20 pe linia dumneavoastră' : 'Simulare: paletizarea manuală actuală'}</span></div>
+      <div class="dz-verdict ${verdict.cls}">
+        <div class="dz-vt">${verdict.t}</div>
+        <p>${esc(verdict.s)}</p>
+        <div class="dz-kpi"><b>${fmt(m.kgDay / 1000, 1)} t</b><span>ridicate manual pe zi astăzi</span></div>
+        <div class="dz-kpi"><b>${ok ? '0 t' : '–'}</b><span>ridicate manual la paletizare cu UR20</span></div>
+        <div class="dz-kpi"><b>${dims}</b><span>amprenta celulei, cu zona de siguranță</span></div>
+      </div>
+    </div>
+
+    <div class="dz-cols">
+      <div>
+        <h2>Datele liniei</h2>
+        <table class="dz-t">
+          <tr><td>Găleată</td><td>${fmt(d.kg, 1)} kg · Ø${fmt(d.diameter)} × ${fmt(d.height)} cm · ${d.handle ? 'cu' : 'fără'} mâner</td></tr>
+          <tr><td>Ritm</td><td>${fmt(d.ppm, 1)} găleți/min</td></tr>
+          <tr><td>Program</td><td>${d.shifts} schimburi/zi · ${d.lines} ${d.lines === 1 ? 'linie' : 'linii'}</td></tr>
+          <tr><td>Operatori</td><td>${d.operators} / schimb la paletizare</td></tr>
+        </table>
+        <h2>Înainte și după</h2>
+        <table class="dz-t dz-ba">
+          <tr><th></th><th>Acum</th><th>Cu UR20</th></tr>
+          ${row('Ridicat manual / schimb / linie', `${fmt(m.kgShift / 1000, 1)} t`, ok ? '0 t' : '–')}
+          ${row('Ridicări / operator / schimb', fmt(m.liftsPerOp), ok ? '0' : '–')}
+          ${row('Operatori expuși zilnic', fmt(m.opsExposed), ok ? 'schimbă paleți și separatoare' : '–')}
+          ${row('Ritm de paletizare', `${fmt(d.ppm, 1)} găleți/min`, ok ? `${fmt(d.ppm, 1)} găleți/min, constant` : '–', true)}
+        </table>
+      </div>
+      <div>
+        <h2>Verificări tehnice orientative</h2>
+        ${ev.checks.map((c) => `<div class="dz-check">${dot(c.status)}<div><b>${c.title}: ${c.pill}</b><p>${esc(c.text)}</p></div></div>`).join('')}
+      </div>
+    </div>
+
+    <div class="dz-cols">
+      <div class="dz-box">
+        <h2>Fapte: aplicația PURATOS (Tech-Con)</h2>
+        <ul><li>2 celule UR20; găleți de 5 kg și 13 kg</li><li>Teste: 7,4 găleți/min (13 kg), 8,6 (5 kg); țintă 6</li><li>Gripper dedicat, cameră 2D, 3 scanere/celulă</li><li>Schimbarea paleților și separatoarele rămân manuale</li><li>Livrare în aproximativ 4 luni</li></ul>
+      </div>
+      <div class="dz-box">
+        <h2>Ipoteze și limite</h2>
+        <ul><li>Gripper estimat 3,5 kg; schimb de 8 h; 1 celulă/linie</li><li>Rezultatele de test nu garantează funcționarea în altă fabrică</li><li>Nu include economii salariale sau amortizare</li><li>Transportul paleților și înfolierea nu fac parte din ofertă</li></ul>
+      </div>
+    </div>
+
+    <div class="dz-next">
+      <h2>Pașii următori</h2>
+      <ol><li><b>Apel tehnic</b> cu un inginer Tech-Con</li><li><b>Demonstrație</b> ${esc(demo)}: ${esc(demoDate)}, ${esc(v.slot)}</li><li><b>Evaluare la fața locului:</b> ambalaj, debit, spațiu, siguranță, igienă</li><li><b>Ofertă fermă</b> și plan de implementare</li></ol>
+    </div>
+  </div>
+  <div class="dz-foot">
+    <img src="qr-paletcheck.png" alt="">
+    <div><b>Reverificați oricând linia: scanați codul QR.</b><br>Tech-Con · Dragomirești-Deal · Iași · Timișoara<br>Prototip de concurs (AI-Powered Business Challenge 2026), date fictive. Document orientativ, nu ofertă comercială.</div>
+  </div>`;
+}
+async function makeDossier(btn) {
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '⏳ Se generează dosarul…';
+  const host = document.createElement('div');
+  host.className = 'dossier';
+  try {
+    await Promise.all([loadScript('vendor/html2canvas.min.js'), loadScript('vendor/jspdf.umd.min.js')]);
+    host.innerHTML = dossierHTML();
+    document.body.appendChild(host);
+    await Promise.all([...host.querySelectorAll('img')].map((i) => (i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; }))));
+    const canvas = await window.html2canvas(host, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false });
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+    const w = 210, h = (canvas.height * w) / canvas.width;
+    const scale = Math.min(1, 297 / h);
+    pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', (210 - w * scale) / 2, 0, w * scale, h * scale);
+    pdf.setProperties({ title: `Dosar pre-evaluare UR20 ${state.request.id}`, author: 'PaletCheck UR20' });
+    pdf.save(`Dosar-UR20-${state.request.id}.pdf`);
+    btn.textContent = '✓ Dosar descărcat';
+  } catch (err) {
+    console.error(err);
+    btn.textContent = label;
+    alert('Dosarul nu s-a putut genera. Încearcă din nou.');
+  } finally {
+    host.remove();
+    btn.disabled = false;
+  }
 }
 
 // Înapoi

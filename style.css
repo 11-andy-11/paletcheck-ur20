@@ -284,3 +284,43 @@ footer { max-width: 680px; margin: 0 auto; padding: 8px 16px calc(28px + env(saf
 .ar-help ol { margin: 0; padding-left: 18px; }
 .ar-help li { margin-bottom: 3px; }
 .ar-intro { margin-bottom: 18px; }
+
+/* Dosar PDF (randat în afara ecranului, format A4 la 794 px lățime) */
+.dossier { position: fixed; left: -10000px; top: 0; width: 794px; min-height: 1123px; background: #fff; color: #17202B; font-size: 12px; line-height: 1.4; display: flex; flex-direction: column; }
+.dossier h1 { font-size: 22px; margin: 0 0 4px; line-height: 1.2; }
+.dossier h2 { font-size: 13px; margin: 14px 0 6px; color: #0F4C81; text-transform: uppercase; letter-spacing: .5px; }
+.dz-head { background: linear-gradient(135deg, #0B3A63, #0F4C81 55%, #1565a8); color: #fff; padding: 18px 36px; display: flex; justify-content: space-between; align-items: center; }
+.dz-brand { font-size: 20px; font-weight: 800; } .dz-brand span { color: #F2A93B; }
+.dz-sub { font-size: 12px; opacity: .85; }
+.dz-meta { text-align: right; font-size: 12px; font-weight: 700; }
+.dz-body { padding: 20px 36px 8px; flex: 1; }
+.dz-lead { margin: 0 0 12px; color: #5B6675; }
+.dz-top { display: grid; grid-template-columns: 1.35fr 1fr; gap: 14px; }
+.dz-img { border-radius: 10px; overflow: hidden; border: 1px solid #D8DFE8; position: relative; }
+.dz-img img { display: block; width: 100%; height: 250px; object-fit: cover; }
+.dz-img span { position: absolute; left: 8px; bottom: 8px; background: rgba(23,32,43,.82); color: #fff; padding: 3px 8px; border-radius: 99px; font-size: 10px; }
+.dz-noimg { height: 250px; display: grid; place-items: center; color: #5B6675; background: #EEF2F6; }
+.dz-verdict { border-radius: 10px; padding: 12px 14px; border: 2px solid; }
+.dz-verdict.ok { border-color: #a8d5b5; background: #E6F4EA; } .dz-verdict.warn { border-color: #f3cf96; background: #FEF3E0; } .dz-verdict.bad { border-color: #f1b0ab; background: #FCE8E6; }
+.dz-vt { font-size: 16px; font-weight: 800; }
+.dz-verdict.ok .dz-vt { color: #1E8E3E; } .dz-verdict.warn .dz-vt { color: #B26A00; } .dz-verdict.bad .dz-vt { color: #C5221F; }
+.dz-verdict p { margin: 4px 0 8px; }
+.dz-kpi { display: flex; align-items: baseline; gap: 8px; border-top: 1px solid rgba(0,0,0,.08); padding: 5px 0; }
+.dz-kpi b { font-size: 16px; min-width: 112px; white-space: nowrap; } .dz-kpi span { color: #3a4552; font-size: 11px; }
+.dz-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.dz-t { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+.dz-t td, .dz-t th { padding: 5px 6px; border-bottom: 1px solid #E6EBF1; text-align: left; vertical-align: top; }
+.dz-t td:first-child { color: #5B6675; width: 38%; }
+.dz-ba th { font-size: 10.5px; color: #5B6675; }
+.dz-ba td.b { color: #C5221F; font-weight: 700; } .dz-ba td.a { color: #1E8E3E; font-weight: 700; }
+.dz-check { display: flex; gap: 8px; margin-bottom: 7px; }
+.dz-check p { margin: 1px 0 0; font-size: 11px; color: #3a4552; }
+.dd { width: 10px; height: 10px; border-radius: 50%; flex: none; margin-top: 3px; }
+.dd.ok { background: #1E8E3E; } .dd.warn { background: #E0A800; } .dd.bad { background: #C5221F; }
+.dz-box { background: #F4F7FA; border-radius: 10px; padding: 2px 14px 8px; margin-top: 10px; }
+.dz-box ul, .dz-next ol { margin: 0; padding-left: 16px; font-size: 11.5px; }
+.dz-box li, .dz-next li { margin-bottom: 3px; }
+.dz-foot { display: flex; gap: 14px; align-items: center; border-top: 3px solid #F2A93B; padding: 12px 36px 16px; font-size: 10.5px; color: #5B6675; }
+.dz-foot img { width: 74px; height: 74px; }
+.dz-foot b { color: #17202B; font-size: 12px; }
+.dz-ba td.n { font-weight: 700; }

@@ -697,6 +697,13 @@ export class CellScene {
     w.torso.position.y = 0.92 - bend * 0.12;
   }
 
+  // Captură a scenei 3D (pentru dosarul PDF)
+  snapshot() {
+    this.controls.update();
+    this.renderer.render(this.scene, this.camera);
+    return this.renderer.domElement.toDataURL('image/jpeg', 0.9);
+  }
+
   // ---------- Export pentru realitate augmentată ----------
   // Celula în poziție de lucru (robotul ține o găleată deasupra paletului), fără rafturi și podea.
   buildExportGroup() {
