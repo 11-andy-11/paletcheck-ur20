@@ -536,10 +536,10 @@ $$('#stepper li').forEach((li) => li.addEventListener('click', () => {
 // ---------- Realitate augmentată ----------
 let mvLoaded = null;
 fetch('ar/dimensiuni.json').then((r) => r.json()).then((s) => {
-  $('#arDims').innerHTML = `Amprenta cu zona de siguranță: <b>~${fmt(s.x, 1)} × ${fmt(s.z, 1)} m</b> · înălțime ~${fmt(s.y, 1)} m`;
+  $$('.ar-dims-text').forEach((el) => (el.innerHTML = `Amprenta cu zona de siguranță: <b>~${fmt(s.x, 1)} × ${fmt(s.z, 1)} m</b> · înălțime ~${fmt(s.y, 1)} m`));
 }).catch(() => {});
 
-$('#openAR').addEventListener('click', async () => {
+async function openAR() {
   const modal = $('#arModal');
   modal.hidden = false;
   document.body.style.overflow = 'hidden';
@@ -584,7 +584,8 @@ $('#openAR').addEventListener('click', async () => {
   mv.addEventListener('ar-status', (e) => {
     if (e.detail.status === 'failed') alert('AR nu a pornit pe acest telefon. Încearcă din Chrome (Android) sau Safari (iPhone), în lumină bună, îndreptând camera spre podea.');
   });
-});
+}
+$$('[data-open-ar]').forEach((b) => b.addEventListener('click', openAR));
 $('#closeAR').addEventListener('click', () => {
   $('#arModal').hidden = true;
   document.body.style.overflow = '';
