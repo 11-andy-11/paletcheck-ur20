@@ -1,7 +1,11 @@
 // Service worker: aplicația se deschide și fără internet.
 // La fiecare modificare importantă, crește versiunea ca telefoanele să ia fișierele noi.
-const CACHE = "paletcheck-v1";
-const FILES = ["./", "./index.html", "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png"];
+const CACHE = "paletcheck-v2";
+const FILES = [
+  "./", "./index.html", "./style.css", "./app.js", "./scene.js", "./manifest.json",
+  "./vendor/three.module.min.js", "./vendor/OrbitControls.js",
+  "./icons/icon-192.png", "./icons/icon-512.png",
+];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)));

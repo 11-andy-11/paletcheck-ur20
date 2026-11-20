@@ -4,110 +4,287 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>PaletCheck UR20</title>
-  <meta name="description" content="Verifică în 2 minute dacă linia ta de găleți poate fi paletizată cu o celulă UR20.">
+  <meta name="description" content="Verifică în 2 minute dacă linia ta de găleți poate fi paletizată cu o celulă UR20 și cere o evaluare tehnică Tech-Con.">
   <meta name="theme-color" content="#0F4C81">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="PaletCheck">
-  <style>
-    :root {
-      --primary: #0F4C81;
-      --accent: #F2A93B;
-      --bg: #F5F7FA;
-      --card: #FFFFFF;
-      --text: #1C2430;
-      --muted: #5B6675;
-      --border: #DCE2EA;
-      --ok: #1E8E3E;
-      --warn: #B26A00;
-      --bad: #C5221F;
-      --radius: 14px;
-    }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; }
-    body {
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      -webkit-text-size-adjust: 100%;
-    }
-    header {
-      background: var(--primary);
-      color: #fff;
-      padding: calc(16px + env(safe-area-inset-top)) 16px 20px;
-    }
-    header .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; }
-    header .brand img { width: 32px; height: 32px; border-radius: 8px; }
-    header h1 { font-size: 1.5rem; line-height: 1.25; margin: 14px 0 6px; }
-    header p { margin: 0; opacity: .9; }
-    main { max-width: 640px; margin: 0 auto; padding: 16px; }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    .card h2 { font-size: 1.15rem; margin: 0 0 8px; }
-    .muted { color: var(--muted); font-size: .92rem; }
-    .btn {
-      display: block; width: 100%;
-      min-height: 48px; padding: 12px 16px;
-      border: 0; border-radius: 12px;
-      font-size: 1rem; font-weight: 600;
-      background: var(--accent); color: #1C2430;
-      cursor: pointer;
-    }
-    .btn.secondary { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
-    .btn + .btn { margin-top: 10px; }
-    footer { max-width: 640px; margin: 0 auto; padding: 8px 16px 32px; font-size: .8rem; color: var(--muted); }
-    #install { display: none; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <div class="brand"><img src="icons/icon-192.png" alt=""> PaletCheck UR20</div>
-    <h1>Poate fi paletizată linia ta de găleți cu un robot UR20?</h1>
-    <p>Verificare orientativă în 2 minute, apoi o evaluare tehnică.</p>
+  <header class="top">
+    <div class="top-row">
+      <div class="brand"><img src="icons/icon-192.png" alt=""> PaletCheck <span>UR20</span></div>
+      <button class="install" id="install" type="button">📲 Instalează</button>
+    </div>
+    <ol class="stepper" id="stepper">
+      <li data-step="1" class="active"><b>1</b><span>Linia ta</span></li>
+      <li data-step="2"><b>2</b><span>Acum</span></li>
+      <li data-step="3"><b>3</b><span>Cu UR20</span></li>
+      <li data-step="4"><b>4</b><span>Evaluare</span></li>
+    </ol>
   </header>
 
   <main>
-    <section class="card">
-      <h2>Schelet pregătit ✅</h2>
-      <p class="muted">Aici vine funcția principală a aplicației, după specificațiile echipei.</p>
-      <button class="btn" type="button">Începe verificarea</button>
-      <button class="btn secondary" id="install" type="button">📲 Instalează pe telefon</button>
+    <!-- PAS 1: DATE -->
+    <section class="step" id="step1">
+      <div class="hero">
+        <h1>Poate fi paletizată linia ta de găleți cu un robot UR20?</h1>
+        <p>Introdu datele liniei și vezi în 2 minute situația actuală, ce se schimbă cu robotul și dacă merită o evaluare tehnică.</p>
+      </div>
+
+      <div class="examples">
+        <span>Date fictive de test:</span>
+        <button type="button" class="chip ok" data-example="normal">✓ Exemplu normal</button>
+        <button type="button" class="chip err" data-example="errors">✗ Exemplu cu erori</button>
+        <button type="button" class="chip warn" data-example="unfit">⚠ Nepotrivit pt. robot</button>
+      </div>
+
+      <div class="banner error" id="formErrors" hidden role="alert"></div>
+
+      <form id="lineForm" novalidate>
+        <fieldset class="card">
+          <legend>🏭 Fabrica</legend>
+          <label class="field" data-f="factory">
+            <span>Tipul fabricii</span>
+            <select name="factory">
+              <option value="">Alege…</option>
+              <option value="panificatie">Ingrediente panificație și patiserie</option>
+              <option value="umpluturi">Gemuri, umpluturi și creme</option>
+              <option value="sosuri">Sosuri și maioneză (HoReCa)</option>
+              <option value="lactate">Lactate</option>
+              <option value="miere">Miere</option>
+              <option value="alt-aliment">Alt produs alimentar</option>
+              <option value="nealimentar">Nealimentar (vopsele, chimice)</option>
+            </select>
+            <small class="err-msg"></small>
+          </label>
+          <label class="field" data-f="region">
+            <span>Regiunea</span>
+            <select name="region">
+              <option value="">Alege…</option>
+              <option>București-Ilfov</option>
+              <option>Sud-Muntenia</option>
+              <option>Sud-Est</option>
+              <option>Sud-Vest Oltenia</option>
+              <option>Nord-Est</option>
+              <option>Centru</option>
+              <option>Nord-Vest</option>
+              <option>Vest</option>
+            </select>
+            <small class="err-msg"></small>
+          </label>
+        </fieldset>
+
+        <fieldset class="card">
+          <legend>🪣 Găleata</legend>
+          <div class="grid3">
+            <label class="field" data-f="kg">
+              <span>Greutate plină</span>
+              <div class="unit"><input name="kg" type="text" inputmode="decimal" autocomplete="off" placeholder="13"><i>kg</i></div>
+              <small class="err-msg"></small>
+            </label>
+            <label class="field" data-f="diameter">
+              <span>Diametru</span>
+              <div class="unit"><input name="diameter" type="text" inputmode="decimal" autocomplete="off" placeholder="30"><i>cm</i></div>
+              <small class="err-msg"></small>
+            </label>
+            <label class="field" data-f="height">
+              <span>Înălțime</span>
+              <div class="unit"><input name="height" type="text" inputmode="decimal" autocomplete="off" placeholder="32"><i>cm</i></div>
+              <small class="err-msg"></small>
+            </label>
+          </div>
+          <div class="field" data-f="handle">
+            <span>Are mâner?</span>
+            <div class="seg">
+              <label><input type="radio" name="handle" value="da" checked><b>Da</b></label>
+              <label><input type="radio" name="handle" value="nu"><b>Nu</b></label>
+            </div>
+            <small class="err-msg"></small>
+          </div>
+        </fieldset>
+
+        <fieldset class="card">
+          <legend>⚙️ Producția</legend>
+          <div class="grid2">
+            <label class="field" data-f="ppm">
+              <span>Ritmul liniei</span>
+              <div class="unit"><input name="ppm" type="text" inputmode="decimal" autocomplete="off" placeholder="6,5"><i>găleți/min</i></div>
+              <small class="err-msg"></small>
+            </label>
+            <label class="field" data-f="lines">
+              <span>Linii cu găleți</span>
+              <div class="unit"><input name="lines" type="text" inputmode="numeric" autocomplete="off" placeholder="2"><i>linii</i></div>
+              <small class="err-msg"></small>
+            </label>
+            <label class="field" data-f="operators">
+              <span>Operatori la paletizare</span>
+              <div class="unit"><input name="operators" type="text" inputmode="numeric" autocomplete="off" placeholder="2"><i>/ schimb</i></div>
+              <small class="err-msg"></small>
+            </label>
+            <div class="field" data-f="shifts">
+              <span>Schimburi pe zi</span>
+              <div class="seg">
+                <label><input type="radio" name="shifts" value="1"><b>1</b></label>
+                <label><input type="radio" name="shifts" value="2" checked><b>2</b></label>
+                <label><input type="radio" name="shifts" value="3"><b>3</b></label>
+              </div>
+              <small class="err-msg"></small>
+            </div>
+          </div>
+        </fieldset>
+
+        <button class="btn primary big" type="submit">Vezi situația actuală →</button>
+      </form>
+    </section>
+
+    <!-- SCENA 3D (comună pașilor 2 și 3) -->
+    <section class="step" id="stageWrap" hidden>
+      <div class="stage card flush">
+        <div class="stage-3d" id="stage3d"></div>
+        <div class="stage-badge" id="stageBadge">👷 Paletizare manuală</div>
+        <div class="stage-speed" id="stageSpeed">simulare ×3</div>
+        <div class="stage-live" id="stageLive"></div>
+        <div class="stage-toast" id="stageToast"></div>
+        <div class="stage-hint">↻ rotește cu degetul</div>
+      </div>
+    </section>
+
+    <!-- PAS 2: SITUAȚIA ACTUALĂ -->
+    <section class="step" id="step2" hidden>
+      <h2 class="section-title">Situația actuală pe linia ta</h2>
+      <div class="stats" id="statsBefore"></div>
+      <p class="note">Calcule din datele introduse. <span class="tag hyp">Ipoteză</span> un schimb = 8 ore de producție.</p>
+      <button class="btn robot big" id="toRobot" type="button">🤖 Înlocuiește cu robotul UR20</button>
+      <button class="btn ghost" data-back="1" type="button">← Modifică datele</button>
+    </section>
+
+    <!-- PAS 3: CU ROBOT -->
+    <section class="step" id="step3" hidden>
+      <div class="banner error big-banner" id="failBanner" hidden role="alert"></div>
+      <div id="robotOk" hidden>
+        <div class="banner" id="verdictBanner"></div>
+        <h2 class="section-title">Ce se schimbă</h2>
+        <div class="stats" id="statsAfter"></div>
+      </div>
+      <h2 class="section-title">Verificări</h2>
+      <div class="checks" id="checks"></div>
+      <div class="banner info">
+        <b>⚠ Un robot mai rapid nu crește automat debitul liniei.</b>
+        <span id="bottleneckText"></span>
+      </div>
+      <details class="card facts">
+        <summary>Fapte PURATOS vs. ipoteze</summary>
+        <div class="facts-grid">
+          <div>
+            <h4><span class="tag fact">Fapt</span> PURATOS (Tech-Con)</h4>
+            <ul>
+              <li>2 celule UR20, găleți de 5 kg și 13 kg</li>
+              <li>Țintă 6 găleți/min; teste: 7,4 (13 kg) și 8,6 (5 kg)</li>
+              <li>Gripper dedicat + cameră 2D pentru orientarea mânerului</li>
+              <li>3 scanere de siguranță pe celulă, 2 poziții de paletizare</li>
+              <li>Schimbarea paleților și separatoarele rămân manuale</li>
+              <li>Livrare în aproximativ 4 luni</li>
+            </ul>
+          </div>
+          <div>
+            <h4><span class="tag hyp">Ipoteză</span> în acest calculator</h4>
+            <ul>
+              <li>Gripper estimat la 3,5 kg; sarcina UR20 până la 20 kg</li>
+              <li>Ritm de referință interpolat între 5 și 13 kg</li>
+              <li>O celulă pe linie; schimb de 8 ore</li>
+              <li>Rezultatele de test nu sunt o garanție pentru altă fabrică</li>
+            </ul>
+          </div>
+        </div>
+      </details>
+      <button class="btn primary big" id="toRequest" type="button">Solicită evaluare tehnică →</button>
+      <button class="btn ghost" data-back="1" type="button">← Modifică datele</button>
+    </section>
+
+    <!-- PAS 4: CERERE -->
+    <section class="step" id="step4" hidden>
+      <div class="score card" id="scoreCard"></div>
+
+      <div id="requestFormWrap">
+        <div class="banner error" id="reqErrors" hidden role="alert"></div>
+        <form id="reqForm" class="card" novalidate>
+          <h3>Cerere de evaluare tehnică</h3>
+          <p class="note">⚠ Prototip de concurs: folosiți <b>date fictive</b>, nu date personale reale.</p>
+          <label class="field" data-f="company">
+            <span>Companie</span>
+            <input name="company" type="text" placeholder="ex. Fabrica Demo SRL" autocomplete="off">
+            <small class="err-msg"></small>
+          </label>
+          <label class="field" data-f="role">
+            <span>Rolul tău</span>
+            <select name="role">
+              <option value="">Alege…</option>
+              <option value="dir-productie">Director de producție</option>
+              <option value="dir-fabrica">Director de fabrică</option>
+              <option value="investitii">Responsabil investiții / financiar</option>
+              <option value="mentenanta">Șef mentenanță / inginer proces</option>
+              <option value="hse">Responsabil SSM / HSE</option>
+              <option value="altul">Altul</option>
+            </select>
+            <small class="err-msg"></small>
+          </label>
+          <label class="field" data-f="email">
+            <span>E-mail (fictiv)</span>
+            <input name="email" type="email" inputmode="email" placeholder="demo@fabrica-demo.ro" autocomplete="off">
+            <small class="err-msg"></small>
+          </label>
+          <div class="field" data-f="demoType">
+            <span>Tipul demonstrației</span>
+            <div class="seg wrap">
+              <label><input type="radio" name="demoType" value="birou" checked><b id="officeLabel">La birou</b></label>
+              <label><input type="radio" name="demoType" value="online"><b>Online</b></label>
+              <label><input type="radio" name="demoType" value="fabrica"><b>În fabrică</b></label>
+            </div>
+            <small class="err-msg"></small>
+          </div>
+          <div class="grid2">
+            <label class="field" data-f="date">
+              <span>Data preferată</span>
+              <input name="date" type="date">
+              <small class="err-msg"></small>
+            </label>
+            <label class="field" data-f="slot">
+              <span>Interval</span>
+              <select name="slot">
+                <option value="">Alege…</option>
+                <option>09:00–11:00</option>
+                <option>11:00–13:00</option>
+                <option>13:00–15:00</option>
+                <option>15:00–17:00</option>
+              </select>
+              <small class="err-msg"></small>
+            </label>
+          </div>
+          <label class="check field" data-f="consent">
+            <input type="checkbox" name="consent">
+            <span>Confirm că am folosit date fictive (concurs).</span>
+            <small class="err-msg"></small>
+          </label>
+          <button class="btn primary big" type="submit">Trimite cererea și programează demo</button>
+        </form>
+      </div>
+
+      <div id="confirmation" hidden></div>
+      <button class="btn ghost" data-back="3" type="button" id="backTo3">← Înapoi la rezultat</button>
     </section>
   </main>
 
   <footer>
-    Prototip de concurs cu date fictive. Nu introduceți date personale reale.
+    Prototip PaletCheck UR20 pentru AI-Powered Business Challenge 2026, cu date fictive. Nu introduceți date personale reale.
     Valorile PURATOS (7,4–8,6 găleți/min) sunt rezultate de test ale unei aplicații, nu o garanție pentru alte fabrici.
+    Fără calcule de economii salariale sau amortizare.
   </footer>
 
-  <script>
-    // PWA: înregistrare service worker (funcționare offline)
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("sw.js").catch(() => {});
-    }
-    // Buton „Instalează" (apare doar unde browserul permite, ex. Chrome Android)
-    let installPrompt = null;
-    const installBtn = document.getElementById("install");
-    window.addEventListener("beforeinstallprompt", (e) => {
-      e.preventDefault();
-      installPrompt = e;
-      installBtn.style.display = "block";
-    });
-    installBtn.addEventListener("click", async () => {
-      if (!installPrompt) return;
-      installPrompt.prompt();
-      await installPrompt.userChoice;
-      installPrompt = null;
-      installBtn.style.display = "none";
-    });
-  </script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
